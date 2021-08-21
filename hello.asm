@@ -5,19 +5,19 @@
 global _start
 
 section .data
-	msg: db "Hello world!", 0xa  ; db = declare bytes, 0xa = \n
+	msg: db "Hello world!", 10  ; db = declare bytes, 10 = \n
 	len: equ $-msg  ; current label offset - msg label address
 
 section .text
 _start:
 	; write(1, msg, len) # 1 is stdout, the fd
-	mov eax, 4  ; 4 = write()
-	mov ebx, 1
-	mov ecx, msg
-	mov edx, len
-	int 0x80  ; interrupt to signal kernel
+	mov rax, 1  ; 1 = write()
+	mov rdi, 1
+	mov rsi, msg
+	mov rdx, len
+	syscall
 
 	; exit(0)
-	mov eax, 1  ; 1 = exit()
-	mov ebx, 0
-	int 0x80  ; interrupt to signal kernel
+	mov rax, 60  ; 60 = exit()
+	mov rdi, 0
+	syscall
