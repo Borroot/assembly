@@ -3,11 +3,11 @@ AFLAGS = -f elf64
 
 ASM = nasm
 
-TARGETS = hello
+TARGETS = tictactoe
 
 all: $(TARGETS)
 
-hello: % : %.o
+tictactoe: % : %.o
 	@echo -e "LINK\t$@"
 	@$(LD) $(LFLAGS) -o $@ $^
 
