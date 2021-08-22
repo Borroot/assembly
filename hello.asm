@@ -1,23 +1,31 @@
-; Use the following commands to inspect the machine code
-; hexdump -C hello.nasm
-; objdump -O hello.nasm
-
 global _start
 
-section .data
-	msg: db "Hello world!", 10  ; db = declare bytes, 10 = \n
-	len: equ $-msg  ; current label offset - msg label address
+section .bss
+	buffer: resb 1        ; buffer of 1 byte size
+	buflen: equ $-buffer  ; dynamic buffer length variable
 
 section .text
 _start:
-	; write(1, msg, len) # 1 is stdout, the fd
-	mov rax, 1  ; 1 = write()
-	mov rdi, 1
-	mov rsi, msg
-	mov rdx, len
+
+echo:
+	mov rax, 0       ; syscall read
+	mov rdi, 0       ; stdin
+	lea rsi, buffer  ; buffer
+	mov rdx, buflen  ; buffer length
 	syscall
 
-	; exit(0)
-	mov rax, 60  ; 60 = exit()
-	mov rdi, 0
+	cmp rax, 0       ; return value of read (number of bytes read)
+	je done          ; jump if return value is 0
+
+	mov rax, 1       ; syscall write
+	mov rdi, 1       ; stdout
+	lea rsi, buffer  ; buffer
+	mov rdx, buflen  ; buffer length
+	syscall
+
+	jmp echo
+
+done:
+	mov rax, 60  ; syscall exit
+	mov rdi, 0   ; exit success
 	syscall
