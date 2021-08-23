@@ -5,13 +5,23 @@
 %include "macros.asm"
 %include "exit.asm"
 
+section .data
+	msg_move_x: db "Player X, please make a move (1-9): "
+	msg_move_x_len: equ $-msg_move_x
+
+	msg_move_o: db "Player O, please make a move (1-9): "
+	msg_move_o_len: equ $-msg_move_o
+
+	msg_invalid_input: db `Please provide a valid number (1-9).\n`
+	msg_invalid_input_len: equ $-msg_invalid_input
+
 section .bss
 	buffer: resb 1
 
 section .text
 read_input:
-	mov rbx, 0  ; keeps length of input
-	mov rcx, 0  ; keeps last read char
+	mov rbx, 0    ; keeps length of input
+	mov input, 0  ; keeps last read char
 
 	cmp onturn, 0  ; ask player to input a move
 	jne other_onturn
@@ -37,16 +47,17 @@ read_char:
 	cmp rax, `\n`
 	je read_process
 
-	mov r8, [buffer]  ; save previous char
+	mov input, [buffer]  ; save previous char
 	jmp read_char
 
 read_process:
 	cmp rbx, 2  ; input should be [1-9]\n so 2
 	jne read_error
-	cmp r8, "1"
+	cmp input, "1"
 	jl read_error
-	cmp r8, "9"
+	cmp input, "9"
 	jg read_error
+	sub input, "1"  ; convert char to number
 	ret
 
 read_error:

@@ -1,10 +1,13 @@
+SRC_DIR = src
+OBJ_DIR = obj
+
+SRC_FILES = $(wildcard $(SRC_DIR)/*.asm)
+OBJ_FILES = $(patsubst $(SRC_DIR)/%.asm, $(OBJ_DIR)/%.o, $(SRC_FILES))
+
 LFLAGS = -m elf_x86_64
-AFLAGS = -f elf64 -g
+AFLAGS = -f elf64 -I $(SRC_DIR)/ -g
 
 ASM = nasm
-
-SRC_FILES = $(wildcard *.asm)
-OBJ_FILES = $(patsubst %.asm, %.o, $(SRC_FILES))
 
 TARGETS = tictactoe
 
@@ -14,12 +17,13 @@ tictactoe: % : $(OBJ_FILES)
 	@echo -e "LINK\t$@"
 	@$(LD) $(LFLAGS) -o $@ $^
 
-%.o: %.asm
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.asm $(SRC_FILES)
 	@echo -e "ASM\t$@"
-	@$(ASM) $(AFLAGS) $^
+	@mkdir -p $(OBJ_DIR)
+	@$(ASM) $(AFLAGS) -o $@ $<
 
 clean:
-	@rm -f *.o $(TARGETS)
+	@rm -rf $(OBJ_DIR) $(TARGETS)
 
 re: clean all
 

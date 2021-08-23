@@ -4,6 +4,12 @@
 %include "constants.asm"
 %include "macros.asm"
 
+section .data
+	symbol_x: db "X"
+	symbol_o: db "O"
+	symbol_empty: db "."
+	symbol_newline: db `\n`
+
 section .text
 write_board:
 	mov bx, 1 << 0
@@ -39,6 +45,7 @@ write_symbol:
 	jz other_symbol
 	write symbol_x, 1
 	ret
+
 other_symbol:
 	mov ax, cells_o
 	and ax, bx
@@ -46,6 +53,7 @@ other_symbol:
 	jz empty_symbol
 	write symbol_o, 1
 	ret
+
 empty_symbol:
 	write symbol_empty, 1
 	ret
